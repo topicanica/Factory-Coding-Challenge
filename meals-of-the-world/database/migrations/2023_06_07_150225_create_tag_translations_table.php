@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             
             $table->unique(['tag_id','locale']);
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
             $table->timestamps();
         });
     }

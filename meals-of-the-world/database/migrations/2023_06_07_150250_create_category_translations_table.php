@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             
             $table->unique(['category_id','locale']);
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }

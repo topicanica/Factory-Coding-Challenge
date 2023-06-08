@@ -16,8 +16,13 @@ return new class extends Migration
     {
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
+            
+            $table->foreignIdFor(Category::class)->nullable();
+            
             $table->timestamps();
-            $table->foreignIdFor(Category::class)->nullable();           
+            $table->softDeletes();
+            
+            
 
         });
     }

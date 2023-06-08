@@ -15,7 +15,9 @@ class Meal extends Model implements TranslatableContract
     use SoftDeletes;
     use Translatable;
 
-    public $timestamps = true; 
+    public $timestamps = true;
+    protected $dates = ['deleted_at'];
+     
     public $translatedAttributes = ['title','description'];
     protected $fillable = ['title','description','status' => 'CREATED'];
 
