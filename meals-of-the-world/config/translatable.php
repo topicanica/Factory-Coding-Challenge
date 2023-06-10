@@ -13,10 +13,11 @@ return [
     'locales' => [
         'en',
         'fr',
-        'es' => [
-            'MX', // mexican spanish
-            'CO', // colombian spanish
-        ],
+    ],
+
+    'faker_locales' => [
+        'en' => 'en_US',
+        'fr' => 'fr_FR'
     ],
 
     /*
