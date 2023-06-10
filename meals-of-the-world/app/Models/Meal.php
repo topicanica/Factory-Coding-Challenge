@@ -3,35 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Astrotomic\Translatable\Translatable;
+
 
 class Meal extends Model implements TranslatableContract
 {
-    use SoftDeletes;
-    use Translatable;
+    use SoftDeletes,Translatable,HasFactory;
 
     public $timestamps = true;
-    protected $dates = ['deleted_at'];
+    //protected $dates = ['deleted_at'];
      
     public $translatedAttributes = ['title','description'];
-    protected $fillable = ['title','description','status' => 'CREATED'];
+    protected $fillable = ['title','description',"category_id"];
 
-    public function category(): HasOne 
+    public function category()
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
-    public function tags()
+    public function tags() 
     {
         return $this->belongsToMany(Tag::class);
     }
 
-    public function ingredients()
+    public function ingredients() 
     {
         return $this->belongsToMany(Ingredient::class);
     }

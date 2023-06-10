@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CategoryTranslation extends Model
@@ -12,17 +11,23 @@ class CategoryTranslation extends Model
 
     protected $fillable = ['title','slug'];
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    } 
+
     /**
      * Return the sluggable configuration array for this model.
      *
      * @return array
      */
-    public function sluggable()
+    public function sluggable() : array
     {
         return [
             'slug' => [
-                'source' => 'title'
+                'source' => 'title',
             ]
         ];
     }
+    
 }
