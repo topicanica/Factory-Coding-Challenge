@@ -16,19 +16,17 @@ return new class extends Migration
     {
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
-            
-            $table->foreignIdFor(Category::class)->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories');
+            $table->foreign('category_id')->references('id')->on('categories');
             
             $table->timestamps();
             $table->softDeletes();
             
-            
-
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.`
      */
     public function down(): void
     {

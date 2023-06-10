@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unique(['tag_id', 'meal_id']);
             $table->foreign('meal_id')->references('id')->on('meals');
             $table->foreign('tag_id')->references('id')->on('tags');
+
+            $table->primary(['tag_id', 'meal_id']);
         });
     }
 
