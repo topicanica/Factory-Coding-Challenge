@@ -25,12 +25,14 @@ class DatabaseSeeder extends Seeder
             $ingredients = Ingredient::factory(2)->create();
             $meal->tags()->attach($tags);
             $meal->ingredients()->attach($ingredients);
-        });
-
-        // Associate random categories to meals
-        $meals->each(function ($meal) use ($categories) {
             $category = $categories->random();
             $meal->category()->associate($category)->save();
         });
+
+        // // Associate random categories to meals
+        // $meals->each(function ($meal) use ($categories) {
+        //     $category = $categories->random();
+        //     $meal->category()->associate($category)->save();
+        // });
     }
 }

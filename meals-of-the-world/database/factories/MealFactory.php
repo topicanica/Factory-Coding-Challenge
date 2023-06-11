@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Category;
 use App\Models\Meal;
 
 /**
@@ -31,6 +32,7 @@ class MealFactory extends Factory
         foreach ($title as $locale => $translation) {
             $meal->translateOrNew($locale)->title = $translation['title'];
             $meal->translateOrNew($locale)->description = $description[$locale]['description'];
+            $meal->category()->associate(Category::factory()->create())->save();
         }
 
         return [];
