@@ -21,13 +21,19 @@ class CategoryTranslation extends Model
      *
      * @return array
      */
+    
+
     public function sluggable() : array
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'category_slug'
             ]
         ];
+    }
+    public function getCategorySlugAttribute(): string
+    {
+        return 'meal' . '-' ;
     }
     
 }

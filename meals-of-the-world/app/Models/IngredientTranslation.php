@@ -17,17 +17,17 @@ class IngredientTranslation extends Model
         return $this->belongsTo(Ingredient::class);
     }
     
-    /**
-     * Return the sluggable configuration array for this model.
-     *
-     * @return array
-     */
     public function sluggable() : array
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'ingredient_slug'
             ]
         ];
+    }
+
+    public function getIngredientSlugAttribute(): string
+    {
+        return 'ingredient' . '-' ;
     }
 }

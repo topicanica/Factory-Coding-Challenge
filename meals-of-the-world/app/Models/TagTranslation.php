@@ -17,17 +17,17 @@ class TagTranslation extends Model
         return $this->belongsTo(Tag::class);
     }
 
-    /**
-     * Return the sluggable configuration array for this model.
-     *
-     * @return array
-     */
     public function sluggable() : array
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'tag_slug'
             ]
         ];
+    }
+
+    public function getTagSlugAttribute(): string
+    {
+        return 'Tag' . '-' ;
     }
 }
