@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Http\Requests\MealRequest;
 use App\Models\Meal;
+use Carbon\Carbon;
 
 class MealService {
 
-    
-    protected function getMealsByIds($mealIds, $with)
+    public function getMealsByIds($mealIds, $with)
     {
         $relationships = explode(',', $with);
         if (!empty($with)){
@@ -27,7 +27,7 @@ class MealService {
         }
     }
     
-    protected function filterMealsByCategoryId($category){
+    public function filterMealsByCategoryId($category){
         return Meal::when($category, function ($query) use ($category) {
             return $query->whereHas('category', function ($query) use ($category) {
                 $query->where('category_id', $category);
@@ -35,7 +35,7 @@ class MealService {
         });
     }
 
-    protected function filterMealsByTagsIds($tags){
+    public function filterMealsByTagsIds($tags){
         return Meal::when($tags, function ($query) use ($tags) {
             return $query->whereHas('tags', function ($query) use ($tags) {
                 if (is_array($tags)) {
@@ -47,7 +47,7 @@ class MealService {
         });
     }
 
-    protected function attachRelationships($with, $query)
+    public function attachRelationships($with, $query)
     {
         return $query->when($with, function ($query) use ($with) {
             $relationships = explode(',', $with);
@@ -55,14 +55,27 @@ class MealService {
         });
     }
 
-    protected function filterMealsByDiffTime($diffTime, $query)
+    public function filterMealsByDiffTime($diffTime, $query)
     {
-        return $query->when($diffTime, function ($query) use ($diffTime) {
-            return $query->where('diff_time', $diffTime);
-        });
+        if ($diffTime > 0) {
+            $query->withTrashed()
+                ->where(function ($query) use ($diffTime) {
+                    $query->where('created_at', '>', now()->subMinutes($diffTime), function ($query) {
+                        $query->update(['status' => 'created']);
+                    })
+                    ->orWhere('updated_at', '>', now()->subMinutes($diffTime), function ($query) {
+                        $query->update(['status' => 'modified']);
+                    })
+                    ->orWhere('deleted_at', '>', now()->subMinutes($diffTime), function ($query) {
+                        $query->update(['status' => 'deleted']);
+                    });
+                });
+        }else {
+            return $query;
+        }
     }
 
-    protected function collectSameNumbers($array1, $array2)
+    public function collectSameNumbers($array1, $array2)
     {
         $intersect = empty($array1) ? $array2 : (empty($array2) ? $array1 : array_intersect($array1, $array2));
         return array_values($intersect);
@@ -88,22 +101,7 @@ class MealService {
         $response = $this->GetMealsByIds($mealIds,$with);        
         $data = $response->paginate($perPage ?? 10, ['*'], 'page', $page ?? 1);
 
-        $response = [
-            'meta' => [
-                'currentPage' => $data->currentPage(),
-                'totalItems' => $data->total(),
-                'itemsPerPage' => $data->perPage(),
-                'totalPages' => $data->lastPage(),
-            ],
-            'data' => $data->items(),
-            'links' => [
-                'prev' => $data->previousPageUrl(),
-                'next' => $data->nextPageUrl(),
-                'self' => $request->fullUrl(),
-            ],
-        ];
-
-        return $response;
+        return $data;
     }
     
 }

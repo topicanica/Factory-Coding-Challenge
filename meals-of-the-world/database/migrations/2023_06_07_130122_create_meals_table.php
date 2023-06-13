@@ -18,6 +18,8 @@ return new class extends Migration
             $table->id();
             $table->integer('category_id')->unsigned()->nullable();
             $table->foreign('category_id')->references('id')->on('categories');
+
+            $table->string('status')->default('created');
             
             $table->timestamps();
             $table->softDeletes();
