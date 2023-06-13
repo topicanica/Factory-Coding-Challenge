@@ -29,6 +29,6 @@ class TagTranslation extends Model
 
     public function getTagSlugAttribute(): string
     {
-        return 'Tag' . '-' ;
+        return 'tag' . '-' ;
     }
 }

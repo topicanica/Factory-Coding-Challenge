@@ -14,7 +14,7 @@ class Meal extends Model implements TranslatableContract
     use SoftDeletes,Translatable,HasFactory;
 
     public $translatedAttributes = ['title','description'];
-    protected $fillable = ['title','description'];
+    protected $fillable = ['title','description','status'=>'created'];
     //protected $dates = ['deleted_at'];
     
     public function category()

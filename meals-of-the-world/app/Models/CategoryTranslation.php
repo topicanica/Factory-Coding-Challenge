@@ -27,7 +27,7 @@ class CategoryTranslation extends Model
     }
     public function getCategorySlugAttribute(): string
     {
-        return 'meal' . '-' ;
+        return 'category' . '-' ;
     }
     
 }
