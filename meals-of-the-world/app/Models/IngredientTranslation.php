@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class IngredientTranslation extends Model
 {
     use Sluggable;
-
+    
+    public $timestamps = false;
     protected $fillable = ['title', 'slug'];
 
     public function ingredient()

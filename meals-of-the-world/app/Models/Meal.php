@@ -13,12 +13,10 @@ class Meal extends Model implements TranslatableContract
 {
     use SoftDeletes,Translatable,HasFactory;
 
-    public $timestamps = true;
-    //protected $dates = ['deleted_at'];
-     
     public $translatedAttributes = ['title','description'];
-    protected $fillable = ['title','description',"category_id"];
-
+    protected $fillable = ['title','description'];
+    //protected $dates = ['deleted_at'];
+    
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -26,12 +24,13 @@ class Meal extends Model implements TranslatableContract
 
     public function tags() 
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class, 'meal_tag');
     }
 
     public function ingredients() 
     {
         return $this->belongsToMany(Ingredient::class);
+
     }
-   
+
 }

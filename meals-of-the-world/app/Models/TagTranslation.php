@@ -10,6 +10,7 @@ class TagTranslation extends Model
 {
     use Sluggable;
 
+    public $timestamps = false;
     protected $fillable = ['title', 'slug'];
 
     public function tag()

@@ -14,4 +14,9 @@ class Ingredient extends Model implements TranslatableContract
     public $translatedAttributes = ['title'];
 
     protected $fillable = ['title', 'slug'];
+
+    public function meals()
+    {
+        return $this->belongsToMany(Tag::class, 'meal_tag');
+    }
 }

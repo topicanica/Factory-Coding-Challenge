@@ -21,7 +21,6 @@ return new class extends Migration
             
             $table->unique(['meal_id','locale']);
             $table->foreign('meal_id')->references('id')->on('meals')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

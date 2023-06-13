@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('meal_id')->unsigned();
             
             $table->unique(['tag_id', 'meal_id']);
-            $table->foreign('meal_id')->references('id')->on('meals');
-            $table->foreign('tag_id')->references('id')->on('tags');
+            $table->foreign('meal_id')->references('id')->on('meals')->onDelete('cascade');;
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');;
 
             $table->primary(['tag_id', 'meal_id']);
         });
