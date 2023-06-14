@@ -17,7 +17,7 @@ class TagFactory extends Factory
      */
     public function definition()
     {
-        $title = faker_translation('title','foodName');
+        $title = faker_translation('title','vegetable name');
         return $title;
         
         // return [

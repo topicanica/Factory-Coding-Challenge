@@ -16,7 +16,7 @@ class IngredientFactory extends Factory
      */
     public function definition()
     {
-        $title = faker_translation('title','foodName');
+        $title = faker_translation('title','sauceName');
         return $title;
         
         // return [

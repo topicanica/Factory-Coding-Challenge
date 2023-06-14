@@ -15,8 +15,8 @@ class Tag extends Model implements TranslatableContract
 
     protected $fillable = ['title', 'slug'];
 
-    public function meals()
+    public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'meal_tag');
+        return $this->belongsToMany(Tag::class, 'meal_tag', 'meal_id', 'tag_id');
     }
 }

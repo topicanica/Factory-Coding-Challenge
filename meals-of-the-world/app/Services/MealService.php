@@ -5,29 +5,25 @@ namespace App\Services;
 use App\Http\Requests\MealRequest;
 use App\Models\Meal;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-class MealService {
-
+class MealService
+{
     public function getMealsByIds($mealIds, $with)
     {
-        $relationships = explode(',', $with);
-        if (!empty($with)){
-            if (empty($mealIds)) {
-                return Meal::query()->with($relationships);
-            }
-            else {
-                return Meal::whereIn('id', $mealIds)->with($relationships);
-            }
+        $query = Meal::query();
+        if (!empty($with)) {
+            $relationships = explode(',', $with);
+            $query->with($relationships);
         }
-        if (empty($mealIds)) {
-            return Meal::query();
+        if (!empty($mealIds)) {
+            $query->whereIn('id', $mealIds);
         }
-        else {
-            return Meal::whereIn('id', $mealIds);
-        }
+        return $query;
     }
-    
-    public function filterMealsByCategoryId($category){
+
+    public function filterMealsByCategoryId($category)
+    {
         return Meal::when($category, function ($query) use ($category) {
             return $query->whereHas('category', function ($query) use ($category) {
                 $query->where('category_id', $category);
@@ -35,16 +31,19 @@ class MealService {
         });
     }
 
-    public function filterMealsByTagsIds($tags){
-        return Meal::when($tags, function ($query) use ($tags) {
-            return $query->whereHas('tags', function ($query) use ($tags) {
-                if (is_array($tags)) {
-                    return $query->whereIn('tags.id', $tags);
-                } else {
-                    return $query->where('tags.id', $tags);
-                }
+    public function filterMealsByTagsIds($tags, $locale)
+    {
+        $query = Meal::query();
+        if ($tags !== null) {
+            $tags = (array) $tags;
+
+            $query->whereIn('id', function ($innerQuery) use ($tags) {
+                $innerQuery->select('meal_id')
+                    ->from('meal_tag')
+                    ->whereIn('tag_id', $tags);
             });
-        });
+        }
+        return $query;
     }
 
     public function attachRelationships($with, $query)
@@ -57,22 +56,28 @@ class MealService {
 
     public function filterMealsByDiffTime($diffTime, $query)
     {
+        $modifiedIds = [];
         if ($diffTime > 0) {
             $query->withTrashed()
-                ->where(function ($query) use ($diffTime) {
-                    $query->where('created_at', '>', now()->subMinutes($diffTime), function ($query) {
-                        $query->update(['status' => 'created']);
-                    })
-                    ->orWhere('updated_at', '>', now()->subMinutes($diffTime), function ($query) {
-                        $query->update(['status' => 'modified']);
-                    })
-                    ->orWhere('deleted_at', '>', now()->subMinutes($diffTime), function ($query) {
-                        $query->update(['status' => 'deleted']);
-                    });
+                ->where(function ($query) use ($diffTime, &$modifiedIds) {
+                    $query->where('created_at', '>', now()->subMinutes($diffTime))
+                        ->update(['status' => 'created']);
+                    $modifiedIds = $query->pluck('id')->toArray();
+                })
+                ->orWhere(function ($query) use ($diffTime, &$modifiedIds) {
+                    $query->where('updated_at', '>', now()->subMinutes($diffTime))
+                        ->update(['status' => 'modified']);
+                    $modifiedIds = $query->pluck('id')->toArray();
+                })
+                ->orWhere(function ($query) use ($diffTime, &$modifiedIds) {
+                    $query->where('deleted_at', '>', now()->subMinutes($diffTime))
+                        ->update(['status' => 'deleted']);
+                    $modifiedIds = $query->pluck('id')->toArray();
                 });
-        }else {
-            return $query;
+
+            $modifiedIds = $query->pluck('id')->toArray();
         }
+        return $modifiedIds;
     }
 
     public function collectSameNumbers($array1, $array2)
@@ -87,21 +92,40 @@ class MealService {
 
         $perPage = $validatedData['per_page'] ?? null;
         $page = $validatedData['page'] ?? null;
-        $category = $validatedData['category'] ?? null;
-        $tags = $validatedData['tags'] ?? null;
+        $category = $validatedData['category'] ?? [];
+        $tags = $validatedData['tags'] ?? [];
         $locale = $validatedData['lang'];
         $with = $validatedData['with'] ?? null;
         $diffTime = $validatedData['diff_time'] ?? null;
-        
+
         app()->setLocale($locale);
-        $mealCategory = $this->filterMealsByCategoryId($category)->pluck('id')->toArray();
-        $mealTags = $this->filterMealsByTagsIds($tags)->pluck('id')->toArray();
+        $mealCategory = $this->filterMealsByCategoryId($category)->get()->pluck('id')->toArray();
+        $mealTags = $this->filterMealsByTagsIds($tags, $locale)->get()->pluck('id')->toArray();
         $mealIds = $this->collectSameNumbers($mealCategory, $mealTags);
-
-        $response = $this->GetMealsByIds($mealIds,$with);        
-        $data = $response->paginate($perPage ?? 10, ['*'], 'page', $page ?? 1);
-
+        $query = $this->getMealsByIds($mealIds, $with);
+    
+        if ($diffTime > 0) {
+            $modifiedMeals = $this->filterMealsByDiffTime($diffTime, clone $query);
+            $query = $query->get()->concat($modifiedMeals);
+        }
+    
+        $perPage = $perPage ?? 10;
+        $page = $page ?? 1;
+    
+        $offset = ($page - 1) * $perPage;
+        $items = $query->slice($offset, $perPage)->all();
+    
+        $data = new LengthAwarePaginator(
+            $items,
+            count($query),
+            $perPage,
+            $page,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
+    
         return $data;
     }
-    
 }

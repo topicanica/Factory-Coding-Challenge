@@ -15,12 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create categories
-        $categories = Category::factory(10)->create();
 
-        // Create meals
+        $categories = Category::factory(10)->create();
         $meals= Meal::factory(10)->create()->each(function ($meal) use ($categories) {
-            // Attach random tags and ingredients to each meal
             $tags = Tag::factory(2)->create();
             $ingredients = Ingredient::factory(2)->create();
             $meal->tags()->attach($tags);

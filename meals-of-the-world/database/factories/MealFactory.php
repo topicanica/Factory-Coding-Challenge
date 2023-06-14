@@ -12,12 +12,6 @@ use App\Models\Meal;
 class MealFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = Meal::class;
-    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
