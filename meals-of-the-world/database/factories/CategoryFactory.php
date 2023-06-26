@@ -18,9 +18,5 @@ class CategoryFactory extends Factory
     {
         $title = faker_translation('title', 'foodName');
         return $title;
-
-        // return [
-        //     'title' => $title,
-        // ];
     }
 }

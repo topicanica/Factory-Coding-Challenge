@@ -18,9 +18,5 @@ class IngredientFactory extends Factory
     {
         $title = faker_translation('title','sauceName');
         return $title;
-        
-        // return [
-        //     'title' => $title,
-        // ];
     }
 }

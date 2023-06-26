@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Astrotomic\Translatable\Translatable;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Meal extends Model implements TranslatableContract
 {
@@ -22,7 +22,7 @@ class Meal extends Model implements TranslatableContract
         return $this->belongsTo(Category::class);
     }
 
-    public function tags() 
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'meal_tag', 'meal_id', 'tag_id');
     }
@@ -30,7 +30,5 @@ class Meal extends Model implements TranslatableContract
     public function ingredients() 
     {
         return $this->belongsToMany(Ingredient::class);
-
     }
-
 }

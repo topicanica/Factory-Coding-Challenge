@@ -12,11 +12,6 @@ class IngredientTranslation extends Model
     
     public $timestamps = false;
     protected $fillable = ['title', 'slug'];
-
-    public function ingredient()
-    {
-        return $this->belongsTo(Ingredient::class);
-    }
     
     public function sluggable() : array
     {

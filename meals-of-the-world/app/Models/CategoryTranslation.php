@@ -11,11 +11,6 @@ class CategoryTranslation extends Model
 
     public $timestamps = false;
     protected $fillable = ['title','slug'];
-    
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    } 
 
     public function sluggable() : array
     {

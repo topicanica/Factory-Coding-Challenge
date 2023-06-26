@@ -15,21 +15,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
         $categories = Category::factory(10)->create();
-        $meals= Meal::factory(10)->create()->each(function ($meal) use ($categories) {
+
+        Meal::factory(10)->create()->each(function ($meal) use ($categories) {
             $tags = Tag::factory(2)->create();
             $ingredients = Ingredient::factory(2)->create();
             $meal->tags()->attach($tags);
             $meal->ingredients()->attach($ingredients);
             $category = $categories->random();
             $meal->category()->associate($category)->save();
-        });
 
-        // // Associate random categories to meals
-        // $meals->each(function ($meal) use ($categories) {
-        //     $category = $categories->random();
-        //     $meal->category()->associate($category)->save();
-        // });
+            $title = faker_translation('title', 'foodName');
+            $description = faker_translation('description', 'foodName');
+
+            foreach ($title as $locale => $translation) {
+                $meal->translateOrNew($locale)->title = $translation['title'];
+            }
+            foreach ($description as $locale => $translation) {
+                $meal->translateOrNew($locale)->description = $translation['description'];
+            }
+
+            $meal->save();
+        });
     }
 }
