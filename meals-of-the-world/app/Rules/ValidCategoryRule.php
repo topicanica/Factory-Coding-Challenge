@@ -14,7 +14,7 @@ class ValidCategoryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if ($value !== 'NULL' && $value !== '!NULL' && (!is_numeric($value) || $value <= 1)) {
+        if ($value !== 'NULL' && $value !== '!NULL' && $value < 1) {
             $fail('The :attribute must be NULL, !NULL, or a number greater than 1.');
         }
     }

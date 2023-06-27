@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MealRequest;
-use App\Http\Resources\MealResource;
 use App\Services\MealService;
 use Illuminate\Routing\Controller as BaseController;
 

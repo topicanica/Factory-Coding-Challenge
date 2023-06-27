@@ -15,7 +15,7 @@ class Meal extends Model implements TranslatableContract
 
     public $translatedAttributes = ['title','description'];
     protected $fillable = ['title','description','status'=>'created'];
-    //protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at'];
     
     public function category()
     {

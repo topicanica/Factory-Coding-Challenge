@@ -3,12 +3,8 @@
 namespace App\Services;
 
 use App\Http\Requests\MealRequest;
-use App\Http\Resources\MealCollection;
 use App\Models\Meal;
-use App\Http\Resources\MealResource;
 use App\Pagination\CustomPaginator;
-use Illuminate\Pagination\LengthAwarePaginator;
-
 
 class MealService
 {
@@ -26,7 +22,6 @@ class MealService
                 $query->where('category_id', $category);
             }
         }
-        //echo("<script>console.log('PHP: " . json_encode($query->get()) . "');</script>");
 
         // Filter by tags
         if ($tags !== null) {
@@ -46,22 +41,27 @@ class MealService
 
         // Change meal status by provided diffTime
         if ($diffTime > 0) {
-            $query->withTrashed()
-                ->where(function ($query) use ($diffTime) {
-                    $query->where('created_at', '>', now()->subMinutes($diffTime))
-                        ->update(['status' => 'created']);
-                })
-                ->orWhere(function ($query) use ($diffTime) {
-                    $query->where('updated_at', '>', now()->subMinutes($diffTime))
-                        ->update(['status' => 'modified']);
-                })
-                ->orWhere(function ($query) use ($diffTime) {
-                    $query->where('deleted_at', '>', now()->subMinutes($diffTime))
-                        ->update(['status' => 'deleted']);
-                });
-
+            $query->where(function ($query) use ($diffTime) {
+                $query->onlyTrashed()
+                    ->where('deleted_at', '>', now()->subMinutes($diffTime))
+                    ->update(['status' => 'deleted']);
+            })
+            ->orWhere(function ($query) use ($diffTime) {
+                $query->whereNull('deleted_at')
+                    ->where('updated_at', '>', now()->subMinutes($diffTime))
+                    ->update(['status' => 'modified']);
+            })
+            ->orWhere(function ($query) use ($diffTime) {
+                $query->whereNull('deleted_at')
+                    ->where('created_at', '>', now()->subMinutes($diffTime))
+                    ->where('status', '<>', 'modified')
+                    ->update(['status' => 'created']);
+            })->withTrashed();
         }
-        return $query;
+
+        $results = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return $results;
     }
     public function getMealsData(MealRequest $request)
     {
@@ -79,8 +79,8 @@ class MealService
         
         $data = $this->filterMeals($perPage, $page, $category, $tags, $with, $locale, $diffTime);
         return new CustomPaginator(
-            $data->get(),
-            count($data->get()),
+            $data->items(),
+            $data->total(),
             $perPage,
             $page,
             [

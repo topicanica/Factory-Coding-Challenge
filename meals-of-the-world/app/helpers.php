@@ -21,9 +21,3 @@ if (! function_exists('faker_translation')) {
         return $propertyArray;
     }
 }
-        // return [
-        //     'title' => [
-        //         'en' => $faker->foodName(),
-        //         'it' => $faker->foodName(),
-        //     ],   
-        // ];

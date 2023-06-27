@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Ingredient;
-use App\Models\Tag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
