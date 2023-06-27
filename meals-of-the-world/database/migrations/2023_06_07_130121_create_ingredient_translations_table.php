@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('locale')->index();
 
             $table->string('title');
-            $table->string('slug')->unique();
             
             $table->unique(['ingredient_id','locale']);
             $table->foreign('ingredient_id')->references('id')->on('ingredients')->onDelete('cascade');
