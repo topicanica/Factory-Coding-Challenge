@@ -12,7 +12,7 @@ return [
     */
     'locales' => [
         'en',
-        'fr',
+        'fr'
     ],
 
     'faker_locales' => [
@@ -131,7 +131,7 @@ return [
     | translations relationship is already loaded.
     |
      */
-    'to_array_always_loads_translations' => true,
+    'to_array_always_loads_translations' => false,
 
     /*
     |--------------------------------------------------------------------------
