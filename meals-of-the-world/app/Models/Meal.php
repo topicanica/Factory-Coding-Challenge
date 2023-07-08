@@ -22,9 +22,9 @@ class Meal extends Model implements TranslatableContract
         return $this->belongsTo(Category::class);
     }
 
-    public function tags(): BelongsToMany
+    public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'meal_tag', 'meal_id', 'tag_id');
+        return $this->belongsToMany(Tag::class);
     }
 
     public function ingredients() 

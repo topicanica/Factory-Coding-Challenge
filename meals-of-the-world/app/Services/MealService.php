@@ -26,11 +26,9 @@ class MealService
         // Filter by tags
         if ($tags !== null) {
             $tagIds = explode(',', $tags);
-            $query->whereIn('id', function ($innerQuery) use ($tagIds) {
-                $innerQuery->select('meal_id')
-                    ->from('meal_tag')
-                    ->whereIn('tag_id', $tagIds);
-            });
+            $query->whereHas('tags', function ($innerQuery) use ($tagIds) {
+                $innerQuery->whereIn('tag_id', $tagIds);
+            }, '=', count($tagIds));
         }
 
         // Additional information in the response

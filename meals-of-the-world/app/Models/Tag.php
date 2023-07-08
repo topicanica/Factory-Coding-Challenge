@@ -30,8 +30,8 @@ class Tag extends Model implements TranslatableContract
         return 'tag' . '-' ;
     }
 
-    public function meals() : BelongsToMany
+    public function meals()
     {
-        return $this->belongsToMany(Meal::class, 'meal_tag', 'tag_id', 'meal_id');
+        return $this->belongsToMany(Meal::class);
     }
 }
