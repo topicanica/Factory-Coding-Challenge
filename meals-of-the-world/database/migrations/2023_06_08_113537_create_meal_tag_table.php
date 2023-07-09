@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('meal_tag', function (Blueprint $table) {
-            $table->timestamps();
-
-            $table->integer('tag_id')->unsigned();
             $table->integer('meal_id')->unsigned();
-            
+            $table->integer('tag_id')->unsigned();
+            $table->timestamps();
+  
             $table->unique(['tag_id', 'meal_id']);
             $table->foreign('meal_id')->references('id')->on('meals')->onDelete('cascade');
             $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');

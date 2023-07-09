@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('ingredients', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
-            
             $table->string('slug')->unique();
+            $table->timestamps();
         });
     }
 

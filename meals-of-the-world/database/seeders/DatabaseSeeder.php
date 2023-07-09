@@ -16,26 +16,24 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::factory(10)->create();
+        $tags = Tag::factory(10)->create();
+        $ingredients = Ingredient::factory(10)->create();
 
-        Meal::factory(10)->create()->each(function ($meal) use ($categories) {
-            $tags = Tag::factory(2)->create();
-            $ingredients = Ingredient::factory(2)->create();
-            $meal->tags()->attach($tags);
-            $meal->ingredients()->attach($ingredients);
-            $category = $categories->random();
-            $meal->category()->associate($category)->save();
+        Meal::factory(10)->create()->each(function ($meal) use ($categories, $tags, $ingredients) {
+            $meal->tags()->attach($tags->random(2), ['created_at' => now(), 'updated_at' => now()]);
+            $meal->ingredients()->attach($ingredients->random(2), ['created_at' => now(), 'updated_at' => now()]);
 
-            $title = faker_translation('title', 'foodName');
-            $description = faker_translation('description', 'foodName');
-
-            foreach ($title as $locale => $translation) {
-                $meal->translateOrNew($locale)->title = $translation['title'];
-            }
-            foreach ($description as $locale => $translation) {
-                $meal->translateOrNew($locale)->description = $translation['description'];
+            if (rand(0, 1)) {
+                $category = $categories->random();
+                $meal->category()->associate($category);
+            } else {
+                $meal->category_id = null;
             }
 
             $meal->save();
         });
+    
+        $mealToDelete = Meal::inRandomOrder()->limit(3);
+        $mealToDelete->delete();
     }
 }
