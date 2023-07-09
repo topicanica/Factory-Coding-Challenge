@@ -12,6 +12,26 @@ class MealService
     {
         $query = Meal::query();
 
+        // Change meal status by provided diffTime
+        if ($diffTime > 0) {
+            $query->where(function ($query) use ($diffTime) {
+                $query->onlyTrashed()
+                    ->where('deleted_at', '>', now()->subMinutes($diffTime))
+                    ->update(['status' => 'deleted']);
+            })
+            ->orWhere(function ($query) use ($diffTime) {
+                $query->whereNull('deleted_at')
+                    ->where('updated_at', '>', now()->subMinutes($diffTime))
+                    ->update(['status' => 'modified']);
+            })
+            ->orWhere(function ($query) use ($diffTime) {
+                $query->whereNull('deleted_at')
+                    ->where('created_at', '>', now()->subMinutes($diffTime))
+                    ->where('status', '<>', 'modified')
+                    ->update(['status' => 'created']);
+            })->withTrashed();
+        }   
+
         // Filter by category
         if ($category !== null) {
             if ($category === 'NULL') {
@@ -35,26 +55,6 @@ class MealService
         if ($with !== null) {
             $withKeywords = explode(',', $with);
             $query->with($withKeywords);
-        }
-
-        // Change meal status by provided diffTime
-        if ($diffTime > 0) {
-            $query->where(function ($query) use ($diffTime) {
-                $query->onlyTrashed()
-                    ->where('deleted_at', '>', now()->subMinutes($diffTime))
-                    ->update(['status' => 'deleted']);
-            })
-            ->orWhere(function ($query) use ($diffTime) {
-                $query->whereNull('deleted_at')
-                    ->where('updated_at', '>', now()->subMinutes($diffTime))
-                    ->update(['status' => 'modified']);
-            })
-            ->orWhere(function ($query) use ($diffTime) {
-                $query->whereNull('deleted_at')
-                    ->where('created_at', '>', now()->subMinutes($diffTime))
-                    ->where('status', '<>', 'modified')
-                    ->update(['status' => 'created']);
-            })->withTrashed();
         }
 
         $results = $query->paginate($perPage, ['*'], 'page', $page);
